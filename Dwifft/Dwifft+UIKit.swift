@@ -65,17 +65,28 @@ public class CollectionViewDiffCalculator<T: Equatable> {
     public var rows : [T] {
         didSet {
             
+            guard let collectionView = self.collectionView else { return }
+            
             let oldRows = oldValue
             let newRows = self.rows
             let diff = oldRows.diff(newRows)
             if (diff.results.count > 0) {
+                
+                let bottomOffset: CGFloat = collectionView.contentSize.height - collectionView.contentOffset.y
+
+                CATransaction.begin()
+                CATransaction.setDisableActions(true)
+                
                 let insertionIndexPaths = diff.insertions.map({ NSIndexPath(forItem: $0.idx, inSection: self.sectionIndex) })
                 let deletionIndexPaths = diff.deletions.map({ NSIndexPath(forItem: $0.idx, inSection: self.sectionIndex) })
                 
-                collectionView?.performBatchUpdates({ () -> Void in
-                    self.collectionView?.insertItemsAtIndexPaths(insertionIndexPaths)
-                    self.collectionView?.deleteItemsAtIndexPaths(deletionIndexPaths)
-                }, completion: nil)
+                collectionView.performBatchUpdates({ () -> Void in
+                    collectionView.insertItemsAtIndexPaths(insertionIndexPaths)
+                    collectionView.deleteItemsAtIndexPaths(deletionIndexPaths)
+                    }, completion: { finished ins
+                        collectionView.contentOffset = CGPoint(x: 0, y: collectionView.contentSize.height - bottomOffset)
+                        CATransaction.commit()
+                })
             }
             
         }

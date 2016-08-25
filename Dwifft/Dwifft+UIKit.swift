@@ -83,7 +83,7 @@ public class CollectionViewDiffCalculator<T: Equatable> {
                 collectionView.performBatchUpdates({ () -> Void in
                     collectionView.insertItemsAtIndexPaths(insertionIndexPaths)
                     collectionView.deleteItemsAtIndexPaths(deletionIndexPaths)
-                    }, completion: { finished ins
+                    }, completion: { finished in
                         collectionView.contentOffset = CGPoint(x: 0, y: collectionView.contentSize.height - bottomOffset)
                         CATransaction.commit()
                 })

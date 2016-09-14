@@ -63,21 +63,21 @@ class DwifftTests: XCTestCase {
             init(insertionExpectations: [Int: XCTestExpectation], deletionExpectations: [Int: XCTestExpectation]) {
                 self.insertionExpectations = insertionExpectations
                 self.deletionExpectations = deletionExpectations
-                super.init(frame: CGRectZero, style: UITableViewStyle.plain)
+                super.init(frame: CGRect.zero, style: UITableViewStyle.plain)
             }
             
             required init?(coder aDecoder: NSCoder) {
                 fatalError("not implemented")
             }
             
-            private override func insertRowsAtIndexPaths(indexPaths: [NSIndexPath], withRowAnimation animation: UITableViewRowAnimation) {
+            private override func insertRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation) {
                 XCTAssertEqual(animation, UITableViewRowAnimation.left, "incorrect insertion animation")
                 for indexPath in indexPaths {
                     self.insertionExpectations[indexPath.row]!.fulfill()
                 }
             }
             
-            private override func deleteRowsAtIndexPaths(indexPaths: [NSIndexPath], withRowAnimation animation: UITableViewRowAnimation) {
+            private override func deleteRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation) {
                 XCTAssertEqual(animation, UITableViewRowAnimation.right, "incorrect insertion animation")
                 for indexPath in indexPaths {
                     self.deletionExpectations[indexPath.row]!.fulfill()
@@ -109,11 +109,10 @@ class DwifftTests: XCTestCase {
                 fatalError("not implemented")
             }
             
-            @objc func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+            fileprivate func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
                 return UITableViewCell()
             }
-            
-            @objc func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            fileprivate func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
                 return rows.count
             }
             
@@ -147,22 +146,16 @@ class DwifftTests: XCTestCase {
             init(insertionExpectations: [Int: XCTestExpectation], deletionExpectations: [Int: XCTestExpectation]) {
                 self.insertionExpectations = insertionExpectations
                 self.deletionExpectations = deletionExpectations
-                super.init(frame: CGRectZero, collectionViewLayout: UICollectionViewFlowLayout())
+                super.init(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
             }
             
             required init?(coder aDecoder: NSCoder) {
                 fatalError("not implemented")
             }
             
-            private override func insertItemsAtIndexPaths(indexPaths: [NSIndexPath]) {
+            private override func insertItems(at indexPaths: [IndexPath]) {
                 for indexPath in indexPaths {
                     self.insertionExpectations[indexPath.item]!.fulfill()
-                }
-            }
-            
-            private override func deleteItemsAtIndexPaths(indexPaths: [NSIndexPath]) {
-                for indexPath in indexPaths {
-                    self.deletionExpectations[indexPath.item]!.fulfill()
                 }
             }
             
@@ -189,11 +182,11 @@ class DwifftTests: XCTestCase {
                 fatalError("not implemented")
             }
             
-            @objc func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+            fileprivate func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
                 return rows.count
             }
             
-            @objc func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+            fileprivate func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
                 return UICollectionViewCell()
             }
             

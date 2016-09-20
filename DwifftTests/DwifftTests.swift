@@ -63,7 +63,7 @@ class DwifftTests: XCTestCase {
             init(insertionExpectations: [Int: XCTestExpectation], deletionExpectations: [Int: XCTestExpectation]) {
                 self.insertionExpectations = insertionExpectations
                 self.deletionExpectations = deletionExpectations
-                super.init(frame: CGRectZero, style: UITableViewStyle.Plain)
+                super.init(frame: CGRect.zero, style: UITableViewStyle.Plain)
             }
             
             required init?(coder aDecoder: NSCoder) {
@@ -73,14 +73,14 @@ class DwifftTests: XCTestCase {
             private override func insertRowsAtIndexPaths(indexPaths: [NSIndexPath], withRowAnimation animation: UITableViewRowAnimation) {
                 XCTAssertEqual(animation, UITableViewRowAnimation.Left, "incorrect insertion animation")
                 for indexPath in indexPaths {
-                    self.insertionExpectations[indexPath.row]!.fulfill()
+                    self.insertionExpectations[(indexPath as NSIndexPath).row]!.fulfill()
                 }
             }
             
             private override func deleteRowsAtIndexPaths(indexPaths: [NSIndexPath], withRowAnimation animation: UITableViewRowAnimation) {
                 XCTAssertEqual(animation, UITableViewRowAnimation.Right, "incorrect insertion animation")
                 for indexPath in indexPaths {
-                    self.deletionExpectations[indexPath.row]!.fulfill()
+                    self.deletionExpectations[(indexPath as NSIndexPath).row]!.fulfill()
                 }
             }
             
@@ -109,12 +109,12 @@ class DwifftTests: XCTestCase {
                 fatalError("not implemented")
             }
             
-            @objc func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-                return UITableViewCell()
+            @objc private func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+                return diffCalculator.rows.count
             }
             
-            @objc func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-                return rows.count
+            @objc private func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+                return UITableViewCell()
             }
             
         }
@@ -147,7 +147,7 @@ class DwifftTests: XCTestCase {
             init(insertionExpectations: [Int: XCTestExpectation], deletionExpectations: [Int: XCTestExpectation]) {
                 self.insertionExpectations = insertionExpectations
                 self.deletionExpectations = deletionExpectations
-                super.init(frame: CGRectZero, collectionViewLayout: UICollectionViewFlowLayout())
+                super.init(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
             }
             
             required init?(coder aDecoder: NSCoder) {
@@ -155,14 +155,16 @@ class DwifftTests: XCTestCase {
             }
             
             private override func insertItemsAtIndexPaths(indexPaths: [NSIndexPath]) {
+                super.insertItemsAtIndexPaths(indexPaths)
                 for indexPath in indexPaths {
-                    self.insertionExpectations[indexPath.item]!.fulfill()
+                    self.insertionExpectations[(indexPath as NSIndexPath).item]!.fulfill()
                 }
             }
             
             private override func deleteItemsAtIndexPaths(indexPaths: [NSIndexPath]) {
+                super.deleteItemsAtIndexPaths(indexPaths)
                 for indexPath in indexPaths {
-                    self.deletionExpectations[indexPath.item]!.fulfill()
+                    self.deletionExpectations[(indexPath as NSIndexPath).item]!.fulfill()
                 }
             }
             
@@ -183,20 +185,22 @@ class DwifftTests: XCTestCase {
                 self.diffCalculator = CollectionViewDiffCalculator<Int>(collectionView: self.testCollectionView, initialRows: rows)
                 self.rows = rows
                 super.init(nibName: nil, bundle: nil)
+
+                collectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: "TestCell")
+                collectionView.dataSource = self
             }
             
             required init?(coder aDecoder: NSCoder) {
                 fatalError("not implemented")
             }
             
-            @objc func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-                return rows.count
+            @objc private func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+                return diffCalculator.rows.count
             }
             
-            @objc func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-                return UICollectionViewCell()
+            @objc private func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+                return collectionView.dequeueReusableCellWithReuseIdentifier("TestCell", forIndexPath: indexPath)
             }
-            
         }
         
         var insertionExpectations: [Int: XCTestExpectation] = [:]

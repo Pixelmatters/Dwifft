@@ -69,14 +69,14 @@ class StuffTableViewController: UITableViewController {
     }
 
     // MARK: - Table view data source
+
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.stuff.count
     }
-
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
-        cell.textLabel?.text = self.stuff[indexPath.row]
+        cell.textLabel?.text = self.stuff[(indexPath as NSIndexPath).row]
         return cell
     }
-
 }

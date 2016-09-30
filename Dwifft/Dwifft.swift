@@ -118,7 +118,7 @@ public extension Array where Element: Equatable {
     }
     
     /// Walks back through the generated table to generate the LCS.
-    fileprivate static func lcsFromIndices(_ table: [[Int]], _ x: [Element], _ y: [Element], _ i: Int, _ j: Int) -> [Element] {
+    private static func lcsFromIndices(_ table: [[Int]], _ x: [Element], _ y: [Element], _ i: Int, _ j: Int) -> [Element] {
         if i == 0 || j == 0 {
             return []
         } else if x[i-1] == y[j-1] {

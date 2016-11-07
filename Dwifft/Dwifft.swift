@@ -9,13 +9,13 @@
 public struct Diff<T> {
     public let results: [DiffStep<T>]
     public var insertions: [DiffStep<T>] {
-        return results.filter({ $0.isInsertion }).sort { $0.idx < $1.idx }
+        return results.filter({ $0.isInsertion }).sorted { $0.idx < $1.idx }
     }
     public var deletions: [DiffStep<T>] {
-        return results.filter({ !$0.isInsertion }).sort { $0.idx > $1.idx }
+        return results.filter({ !$0.isInsertion }).sorted { $0.idx > $1.idx }
     }
     public func reversed() -> Diff<T> {
-        let reversedResults = self.results.reverse().map { (result: DiffStep<T>) -> DiffStep<T> in
+        let reversedResults = self.results.reversed().map { (result: DiffStep<T>) -> DiffStep<T> in
             switch result {
             case .insert(let i, let j):
                 return .delete(i, j)
@@ -78,7 +78,7 @@ public extension Array where Element: Equatable {
     }
     
     /// Walks back through the generated table to generate the diff.
-    private static func diffFromIndices(_ table: [[Int]], _ x: [Element], _ y: [Element], _ i: Int, _ j: Int) -> Diff<Element> {
+    fileprivate static func diffFromIndices(_ table: [[Int]], _ x: [Element], _ y: [Element], _ i: Int, _ j: Int) -> Diff<Element> {
         if i == 0 && j == 0 {
             return Diff<Element>(results: [])
         } else if i == 0 {
@@ -99,10 +99,10 @@ public extension Array where Element: Equatable {
     public func apply(_ diff: Diff<Element>) -> Array<Element> {
         var copy = self
         for result in diff.deletions {
-            copy.removeAtIndex(result.idx)
+            copy.remove(at: result.idx)
         }
         for result in diff.insertions {
-            copy.insert(result.value, atIndex: result.idx)
+            copy.insert(result.value, at: result.idx)
         }
         return copy
     }
@@ -118,7 +118,7 @@ public extension Array where Element: Equatable {
     }
     
     /// Walks back through the generated table to generate the LCS.
-    private static func lcsFromIndices(_ table: [[Int]], _ x: [Element], _ y: [Element], _ i: Int, _ j: Int) -> [Element] {
+    fileprivate static func lcsFromIndices(_ table: [[Int]], _ x: [Element], _ y: [Element], _ i: Int, _ j: Int) -> [Element] {
         if i == 0 || j == 0 {
             return []
         } else if x[i-1] == y[j-1] {
@@ -134,7 +134,7 @@ public extension Array where Element: Equatable {
 
 internal struct MemoizedSequenceComparison<T: Equatable> {
     static func buildTable(_ x: [T], _ y: [T], _ n: Int, _ m: Int) -> [[Int]] {
-        var table = Array(count:  n + 1, repeatedValue: Array(count:  m + 1, repeatedValue: 0))
+        var table = Array(repeating: Array(repeating: 0, count: m + 1), count: n + 1)
         for i in 0...n {
             for j in 0...m {
                 if (i == 0 || j == 0) {
